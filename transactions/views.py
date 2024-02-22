@@ -6,13 +6,18 @@ from rest_framework.decorators import api_view
 from .serializers import TransactionSerializer
 from . import scripts
 from .models import Transaction
+from django.utils import timezone
 
 def index(request):
     return HttpResponse("Transaction server is hosted")
 
 @api_view(['GET'])
 def getMails(request):
-    transaction = Transaction.objects.all().order_by('-date')
+    # month = timezone.now().month
+    # year = timezone.now().year
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+    transaction = Transaction.objects.filter(date__month=month, date__year=year).order_by('-date')
     serializer = TransactionSerializer(transaction, many=True)
     return Response(serializer.data)
 
